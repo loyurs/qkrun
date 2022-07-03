@@ -1,6 +1,9 @@
 use std::io::Write;
 use std::process::{Command, Stdio};
 
+use anyhow::Error;
+use tracing::info;
+
 ///直接通过内置dockerfile构造
 pub fn build_rust_dev_image_with_extensions(image_name_and_tag:&str) {
     let dockerfile = r#"FROM registry.cn-hangzhou.aliyuncs.com/clouddevs/vscode-extensions:rust AS builder
@@ -29,9 +32,19 @@ RUN mkdir -p /root/.vscode-server && ln -s /config/extensions /root/.vscode-serv
 
 ///通过github文件进行构造
 pub fn git2build(git_urls:&str, image_name_and_tag:&str) {
-    println!("{:?}",git_urls);
+    info!("Start to build");
     Command::new("docker")
     .args(&["build",git_urls,"-t",image_name_and_tag])
     .spawn()
     .expect("Build use git error");
+}
+
+
+///通过github url + github url , 使用docker自带构建
+pub fn giturl_branch_and_folder(git_url_branch_folder: &str, container_name:&str) -> Result<(), Error> {
+    info!("fetch {} ,start to build", git_url_branch_folder);
+    Command::new("docker")
+    .args(&["build",git_url_branch_folder,"--tag", container_name])
+    .stdout(Stdio::inherit()).output()?;
+    Ok(())
 }

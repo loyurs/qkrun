@@ -1,0 +1,19 @@
+docker build https://github.com/loyurs/qkrun.git#master:alicloud_images/x86_64-unknown-linux-musl
+docker build giturl#<main/master/branch>:folder
+
+
+
+构建语法后缀	提交使用	使用的构建上下文
+myrepo.git	refs/heads/master	/
+myrepo.git#mytag	refs/tags/mytag	/
+myrepo.git#mybranch	refs/heads/mybranch	/
+myrepo.git#pull/42/head	refs/pull/42/head	/
+myrepo.git#:myfolder	refs/heads/master	/myfolder
+myrepo.git#master:myfolder	refs/heads/master	/myfolder
+myrepo.git#mytag:myfolder	refs/tags/mytag	/myfolder
+myrepo.git#mybranch:myfolder	refs/heads/mybranch	/myfolder
+
+#warning
+旧版的buildkit不支持子目录
+新版的buildkit支持
+./buildctl build --frontend gateway.v0 --opt source=docker/dockerfile --opt context=https://github.com/loyurs/qkrun.git#master:docker/rust_code_server/ --output type=image,name=docker.io/liloyu/yuxin520:vk
