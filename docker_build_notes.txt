@@ -3,6 +3,9 @@ docker build giturl#<main/master/branch>:folder
 
 
 
+buildkit 需要containerd即可，可以采取，新开一个docker的策略，以这个docker的containerd作为构建容器的容器来构建rm 构建完成后自行销毁，销毁后将构建的以target的形式放置在宿主机即可
+
+
 构建语法后缀	提交使用	使用的构建上下文
 myrepo.git	refs/heads/master	/
 myrepo.git#mytag	refs/tags/mytag	/
@@ -12,6 +15,7 @@ myrepo.git#:myfolder	refs/heads/master	/myfolder
 myrepo.git#master:myfolder	refs/heads/master	/myfolder
 myrepo.git#mytag:myfolder	refs/tags/mytag	/myfolder
 myrepo.git#mybranch:myfolder	refs/heads/mybranch	/myfolder
+
 
 #warning
 旧版的buildkit不支持子目录

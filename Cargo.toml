@@ -1,18 +1,2 @@
-[package]
-name = "qkrun"
-version = "0.1.0"
-edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-exclude = ["src"]
-[dependencies]
-anyhow = "1.0.57"
-clap = { version = "3.1.18", features = ["derive"] }
-# bollard = "0.12.0"
-tokio = { version = "1.19.2", features = [
-    "rt-multi-thread",
-    "macros",
-    "process",
-] }
-tracing-subscriber = "0.3.11"
-tracing = "0.1.35"
+[workspace]
+members  = ["quickrun","rustdevlibs/*"]

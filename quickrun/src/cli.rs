@@ -11,17 +11,16 @@ use crate::usebuildkit::{build_rust_dev_image_with_extensions, giturl_branch_and
 #[clap(version = "0.0.1")]
 #[clap(about = "make a docker vscode-server", long_about = None)]
 pub struct Cli {
-    ///启动一个构建镜像构建，定义构建镜像的名字
-    #[clap(short,long)]
-    name: String,
+    // ///启动一个构建镜像构建，定义构建镜像的名字
+    // #[clap(short,long)]
+    // name: String,
 
-    ///是否需要扩展
-    #[clap(short,long)] //default_value="No"
-    extensions: Option<String>,
+    // ///是否需要扩展
+    // #[clap(short,long)] //default_value="No"
+    // extensions: Option<String>,
 
-    ///git url test
-    #[clap(short,long)] //, default_value="No"
-    build: String
+    #[clap(short, long)]
+    app: String,
 
 }
 
@@ -29,7 +28,5 @@ pub struct Cli {
 pub fn cli_run() {
     let cmd_args = Cli::parse();
     // build_rust_dev_image_with_extensions("hahademo");
-    
-    giturl_branch_and_folder(&cmd_args.build, &cmd_args.name).unwrap();
 
 }
