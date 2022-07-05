@@ -52,9 +52,14 @@ pub fn giturl_branch_and_folder(
 }
 
 ///利用一次性构建的buildkit进行构建,需要带有inherite()，流式输入输出与错误
-/// 异步改造
-pub fn dockerd_buildkit_build(name: &str, git_url: &str, tarfile_path: &str) {
-    let volume_map = "/home:/home";
+///输出的类型有，tar文件(import 导入)，oci，注册表类型；
+/// git_url -> "context=https://github.com/loyurs/qkrun.git#master:docker/rust_code_server/"
+/// tarfile_path_map-> "/home:/home"
+/// name -> ""
+pub fn dockerd_buildkit_build(name: &str, git_url: &str, tarfile_path_map: &str) {
+    // let volume_map = "/home:/home";
+    let mut struct_url = String::from("context=");
+    struct_url.push_str(git_url);
     info!("Start to build use buildkit");
     Command::new("docker")
         .args(&[
@@ -63,7 +68,7 @@ pub fn dockerd_buildkit_build(name: &str, git_url: &str, tarfile_path: &str) {
             "--rm",
             "--privileged",
             "-v",
-            volume_map,
+            tarfile_path_map,
             "--entrypoint",
             "buildctl-daemonless.sh",
             "moby/buildkit:latest",
@@ -73,20 +78,15 @@ pub fn dockerd_buildkit_build(name: &str, git_url: &str, tarfile_path: &str) {
             "--opt",
             "source=docker/dockerfile",
             "--opt",
-            "context=https://github.com/loyurs/qkrun.git#master:docker/rust_code_server/", //need to update
+            struct_url.as_str(),
             "--output",
-            "type=tar,dest=/home/geneout.tar", //need to updates
+            // "type=tar,dest=/home/geneout.tar", //need to updates
+            "type=image,name=docker.io/lidatong/aini, push=true",
         ])
         .stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
         .output()
         .unwrap();
-    // Command::new("docker")
-    //     .arg("run  -it --rm --privileged -v /home:/home --entrypoint buildctl-daemonless.sh moby/buildkit:latest build --frontend dockerfile.v0 --opt source=docker/dockerfile --opt context=https://github.com/loyurs/qkrun.git#master:docker/rust_code_server/ --output type=tar,dest=/home/geneout.tar")
-    //     .stdout(Stdio::inherit())
-    //     .stderr(Stdio::inherit())
-    //     .output()
-    //     .unwrap();
     info!("Ok");
 }
