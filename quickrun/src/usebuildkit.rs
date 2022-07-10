@@ -5,6 +5,11 @@ use anyhow::Error;
 use tracing::info;
 
 ///直接通过内置dockerfile构造
+///quickrun::usebuildkit::dockerd_buildkit_build(
+///      "asd",
+///      "https://github.com/loyurs/qkrun.git#master:dockerfiles/code_server_with_ssh/",
+///      "/home/:/home",
+///  );
 pub fn build_rust_dev_image_with_extensions(image_name_and_tag: &str) {
     let dockerfile = r#"FROM registry.cn-hangzhou.aliyuncs.com/clouddevs/vscode-extensions:rust AS builder
 FROM registry.cn-hangzhou.aliyuncs.com/clouddevs/code-server:ubuntu20-ssh

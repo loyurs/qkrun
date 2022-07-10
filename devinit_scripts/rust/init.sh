@@ -1,0 +1,11 @@
+#快速安装rust开发依赖
+nyxiative.rust-and-friends
+PolyMeilex.rust-targets
+rust-lang.rust-analyzer
+serayuzgur.crates
+Swellaby.rust-pack
+tamasfe.even-better-toml
+usernamehw.errorlens
+vadimcn.vscode-lldb
+yzhang.markdown-all-in-one
+errorlens

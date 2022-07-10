@@ -1,2 +1,2 @@
 [workspace]
-members  = ["quickrun","rustdevlibs/*"]
+members  = ["quickrun"]

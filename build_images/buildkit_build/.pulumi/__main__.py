@@ -1,9 +1,20 @@
 """A Kubernetes Python Pulumi program"""
 
 import pulumi
-from pulumi_kubernetes.apps.v1 import Deployment, DeploymentSpecArgs
+from pulumi_kubernetes.apps.v1 import Deployment, DeploymentSpecArgs, Pod
 from pulumi_kubernetes.meta.v1 import LabelSelectorArgs, ObjectMetaArgs
 from pulumi_kubernetes.core.v1 import ContainerArgs, PodSpecArgs, PodTemplateSpecArgs
+
+app_lables = {"app", "kaniko"}
+
+pod = Pod(
+    "kaniko",
+    spec=PodSpecArgs(
+        
+    )
+)
+
+
 
 app_labels = { "app": "nginx" }
 
