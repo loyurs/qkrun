@@ -1,12 +1,8 @@
-use std::{
-    io::Stdin,
-    process::{Command, Stdio},
-};
+use quickrun::cli::cli_run;
 
-fn main() {
-    Command::new("buildkitd")
-        .args(&[""])
-        .stdout(Stdio::inherit())
-        .output()
-        .unwrap();
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    tracing_subscriber::fmt::init();
+    cli_run().await?;
+    Ok(())
 }

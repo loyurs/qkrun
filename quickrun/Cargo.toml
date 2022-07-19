@@ -2,10 +2,16 @@
 name = "quickrun"
 version = "0.1.0"
 edition = "2021"
-
+authors = ["loyu loyurs@163.com"]
+description = "A tools used to create resoures quickly"
+license = "Apache-2.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 exclude = ["src"]
 [dependencies]
+#数据库应用
+sled = "0.34.7"
+#模板文件
+tinytemplate = "1.2.1"
 anyhow = "1.0.57"
 clap = { version = "3.1.18", features = ["derive"] }
 tokio = { version = "1.19.2", features = [
@@ -13,7 +19,38 @@ tokio = { version = "1.19.2", features = [
     "macros",
     "process",
 ] }
+serde = "1.0.137"
 tracing-subscriber = "0.3.11"
 tracing = "0.1.35"
-base64 = "*"
-serde_json = "*"
+base64 = "0.13.0"
+serde_json = "1.0.81"
+k8s-openapi = { version = "0.15", features = ["v1_23"] }
+kube = { version = "0.74.0", features = ["runtime", "derive"] }
+serde_yaml = "0.8.24"
+# either = "1.7.0"
+# edit = "0.1.4"
+# schemars = "0.8.6"
+
+# [dependencies.uuid]
+# version = "1.1.2"
+# features = [
+#     "v4",                # Lets you generate random UUIDs
+#     "fast-rng",          # Use a faster (but still sufficiently random) RNG
+#     "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
+# ]
+[[example]]
+name = "demo1"
+path = "examples/demo1.rs"
+
+# [[example]]
+# name = "demo2"
+# path = "examples/db.rs"
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+lto = true
+codegen-units = 1
+strip = true

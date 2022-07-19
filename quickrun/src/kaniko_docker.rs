@@ -39,7 +39,7 @@ pub fn build_kaniko() {
 }
 
 ///use kaniko to build with context
-fn generaste_base64_secret(user: &str, password: &str, url: &str) {
+pub fn generaste_base64_secret(user: &str, password: &str, url: &str) {
     let based64 = base64::encode(format!("{}:{}", user, password));
     let pp = json!({
         "auths": {
