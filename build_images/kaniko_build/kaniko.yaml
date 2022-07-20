@@ -12,7 +12,6 @@ spec:
       args:
         - '--dockerfile=Dockerfile'
         - '--context=git://github.com/loyurs/qkrun.git#refs/heads/master'
-        - '--context-sub-path=dockerfiles/test/'
         - '--destination=ccr.ccs.tencentyun.com/tctd/k8k8:latest'
       volumeMounts:
         - name: docker-config

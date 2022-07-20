@@ -324,3 +324,105 @@ pub fn new_secret(
 fn test_new_secret() {
     // let sc = new_secret(KANIKO_SECRET, "213", "kate".into()).unwrap();
 }
+
+#[derive(Serialize)]
+struct StatefulSetPod {
+    ///sts 的名字
+    statefulset_name: String,
+    ///selector名
+    app_name: String,
+    ///启动容器web的密码
+    passwd: String,
+}
+
+static STATEFULSET_POD: &str = r#"apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: {statefulset_name}
+spec:
+  serviceName: {statefulset_name}
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {app_name}
+  template:
+    metadata:
+      labels:
+        app: {app_name}
+    spec:
+      containers:
+      - name: {app_name}
+        image: registry.cn-hangzhou.aliyuncs.com/clouddevs/code-server-vscode:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: PASSWORD
+          value: {passwd}
+        - name: SUDO_PASSWORD
+          value: {passwd}
+        - name: DEFAULT_WORKSPACE
+          value: /config/workspace
+        - name: PUID
+          value: "0"
+        - name: PGID
+          value: "0"
+        - name: HOME
+          value: /config
+        #挂载点注意，连接vscode-client，默认配置文件在 /root/.vscode-server
+        ports:
+        - containerPort: 8443
+          name: code-server
+        - containerPort: 8022
+          name: ssh-port
+        volumeMounts:
+        - name: cfv
+          mountPath: /config
+        volumeMounts:
+        - name: cfv
+          mountPath: /config
+      dnsPolicy: ClusterFirst
+  volumeClaimTemplates:
+  - metadata:
+      name: cfv
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {statefulset_name}
+spec:
+  type: NodePort
+  selector:
+    app: {app_name}
+  ports:
+      # 默认情况下，为了方便起见，`targetPort` 被设置为与 `port` 字段相同的值。
+    - port: 8022
+      targetPort: 8022
+      name: ssh-port
+      # 可选字段
+      # 默认情况下，为了方便起见，Kubernetes 控制平面会从某个范围内分配一个端口号（默认：30000-32767）
+      # nodePort: 30000
+    - port: 8443
+      name: code-server
+      targetPort: 8443
+      # nodePort: 30443"#;
+
+pub fn new_statefulset_codeserver(
+    statefulset_name: String,
+    app_name: String,
+    passwd: String,
+) -> Result<String, anyhow::Error> {
+    let sts = StatefulSetPod {
+        ///sts 的名字
+        statefulset_name,
+        app_name,
+        passwd,
+    };
+    let mut tt = TinyTemplate::new();
+    tt.add_template("sts", STATEFULSET_POD)?;
+    let yaml = tt.render("sts", &sts)?;
+    Ok(yaml)
+}

@@ -53,12 +53,28 @@ enum Commands {
         #[clap(value_parser, long, short)]
         passwd: String,
     },
+    Quick {
+        #[clap(value_parser, long, short)]
+        ///statefulset名字
+        statefulset_name: String,
+        #[clap(value_parser, long, short)]
+        ///selector 的名字
+        app_name: String,
+        #[clap(value_parser, long, short)]
+        ///web url password
+        passwd: String,
+        #[clap(value_parser, long, short)]
+        delete: Option<String>,
+    },
 }
 use anyhow::Error;
 
 use crate::{
     k8sapi::apply_delete,
-    templates::models::{self, new_docker_registry, new_kaniko_build, new_vscode_server_pod},
+    templates::models::{
+        self, new_docker_registry, new_kaniko_build, new_statefulset_codeserver,
+        new_vscode_server_pod,
+    },
 };
 pub async fn cli_run() -> Result<(), Error> {
     let cli = Cli::parse();
@@ -102,6 +118,7 @@ pub async fn cli_run() -> Result<(), Error> {
             image_name,
         } => {
             //创建一个configmap
+            // cargo run  build --git git://github.com/loyurs/qkrun.git#refs/heads/master --subpath build_images/dockerfiles/vscode_server_only/ --registry-api ccr.ccs.tencentyun.com --image-name ccr.ccs.tencentyun.com/tctd/k888:latest --passwd-registry loveme1996! --user-registry 100016367772 --name kaka
             let mut registry_configmap = new_docker_registry(
                 user_registry.as_str(),
                 passwd_registry.as_str(),
@@ -122,6 +139,23 @@ pub async fn cli_run() -> Result<(), Error> {
             // println!("{}",build_yaml);
             apply_delete("create", &registry_configmap).await?;
             apply_delete("create", &build_yaml).await?;
+        }
+        Commands::Quick {
+            statefulset_name,
+            app_name,
+            passwd,
+            delete,
+        } => {
+            let sts_yaml = new_statefulset_codeserver(
+                statefulset_name.to_owned(),
+                app_name.to_owned(),
+                passwd.to_owned(),
+            )?;
+            if delete.is_none() {
+                apply_delete("create", &sts_yaml).await?;
+            } else {
+                apply_delete("delete", &sts_yaml).await?;
+            }
         }
     };
     Ok(())
