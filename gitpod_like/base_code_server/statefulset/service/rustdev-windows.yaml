@@ -1,27 +1,25 @@
-#创建pv，pvc， 和一个有状态应用
-
-kind: PersistentVolume
 apiVersion: v1
+kind: PersistentVolume
 metadata:
   name: rust-pv
   labels:
     type: local
 spec:
-  storageClassName: rust-pv-config
+  storageClassName: rust-pv
   capacity:
     storage: 20Gi
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   hostPath:
-    path: "/mnt/rust/rust-config"
+    path: "C:\\Users\\poddata"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: rust-pvc-config
 spec:
-  storageClassName: rust-pv-config
+  storageClassName: rust-pv
   accessModes:
     - ReadWriteOnce
   resources:
@@ -38,8 +36,6 @@ spec:
   selector:
     matchLabels:
       app: rust
-  # strategy:
-  #   type: Recreate
   template:
     metadata:
       labels:
@@ -52,9 +48,9 @@ spec:
         imagePullPolicy: IfNotPresent
         env:
         - name: PASSWORD
-          value: li
+          value: litong
         - name: SUDO_PASSWORD
-          value: li
+          value: litong
         - name: DEFAULT_WORKSPACE
           value: /config/workspace
         - name: PUID
@@ -73,9 +69,6 @@ spec:
         - name: rust-config
           mountPath: /config
       dnsPolicy: ClusterFirst
-      enableServiceLinks: true
-      hostNetwork: true
-      nodeName: 192.168.1.82
       volumes:
       - name: rust-root
         persistentVolumeClaim:
@@ -84,3 +77,24 @@ spec:
       - name: rust-config
         persistentVolumeClaim:
           claimName: rust-pvc-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service4rust
+spec:
+  type: NodePort
+  selector:
+    app: rust
+  ports:
+      # 默认情况下，为了方便起见，`targetPort` 被设置为与 `port` 字段相同的值。
+    - port: 8022
+      targetPort: 8022
+      name: ssh-port
+      # 可选字段
+      # 默认情况下，为了方便起见，Kubernetes 控制平面会从某个范围内分配一个端口号（默认：30000-32767）
+      nodePort: 30000
+    - port: 8443
+      name: code-server
+      targetPort: 8443
+      nodePort: 30443
